@@ -3,7 +3,8 @@ const path = require("path");
 const app = express();
 const userModel = require("./models/userModel");
 const multer = require("multer");
-
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 // const upload = multer({ dest: "public/images/uploads/" });
 
 const storage = multer.diskStorage({
@@ -31,17 +32,29 @@ app.get("/delete/:id", async (req, res) => {
   res.redirect("/userDataPage");
 });
 
-app.post("/create", upload.single("image"), async (req, res) => {
-  let { username, email, mobile, password, address } = req.body;
-  const image = req.file ? `/images/uploads/${req.file.filename}` : null;
-  const allUser = await userModel.create({
-    username,
-    email,
-    mobile,
-    password,
-    address,
-    image,
+bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.hash("password", salt, (err, hash) => {
+    console.log("hash", hash);
   });
+});
+
+app.post("/create", upload.single("image"), (req, res) => {
+  let { username, email, mobile, password, address } = req.body;
+  bcrypt.genSalt(10, async (err, salt) => {
+    const image = req.file ? `/images/uploads/${req.file.filename}` : null;
+    const allUser = await userModel.create({
+      username,
+      email,
+      mobile,
+      password: hash,
+      address,
+      image,
+    });
+    bcrypt.hash("password", salt, (err, hash) => {
+      console.log("hash", hash);
+    });
+  });
+
   //   res.send(allUser);
   console.log(req.file);
   res.redirect("/userDataPage");
