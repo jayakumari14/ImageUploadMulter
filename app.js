@@ -64,10 +64,8 @@ app.post("/create", upload.single("image"), (req, res) => {
           address,
           image,
         });
-
-        // Send response or perform further actions
-        //   res.send(allUser);
-        // console.log(req.file);
+        const token = jwt.sign({ email }, "secret");
+        res.cookie("token", token);
         res.redirect("/userDataPage");
         // res.send("User created successfully");
       } catch (error) {
