@@ -198,4 +198,8 @@ hr {
   color: #fffb01 !important;
 }
 
+table,
+tr {
+  border: 1px solid;
+}
 /* End */
